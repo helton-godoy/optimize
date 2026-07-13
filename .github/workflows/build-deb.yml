@@ -61,11 +61,6 @@ jobs:
             echo "RELEASE_NOTES_EOF"
           } >> "$GITHUB_OUTPUT"
 
-          echo "### Build Info" >> "$GITHUB_OUTPUT"
-          echo "- Package: \`$PKG_NAME\`" >> "$GITHUB_OUTPUT"
-          echo "- Version: \`$FULL_VERSION\`" >> "$GITHUB_OUTPUT"
-          echo "" >> "$GITHUB_OUTPUT"
-
       - name: Configure git
         run: |
           git config --local user.name "github-actions[bot]"
