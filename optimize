@@ -226,30 +226,48 @@ ensure_source_repos() {
         done
 
         if [[ "$sources_enabled" == false ]]; then
-            log_warn "$(gettext "Source repositories (deb-src) are not enabled.")"
-            log_info "$(gettext "DEB822 format detected in sources configuration.")"
-            echo ""
-            read -rp "  $(gettext "Allow modifying apt sources to add deb-src? [y/N] ")" confirm
-            echo ""
-            if [[ "$confirm" =~ ^[Yy]$ ]]; then
-                for f in "${deb822_files[@]}"; do
-                    if grep -qE '^Types:\s*deb\s*$' "$f"; then
-                        sudo sed -i 's/^Types:\s*deb\s*$/Types: deb deb-src/' "$f"
-                        f_base="$(basename "$f")"
-                        export f_base
-                        log_success "$(eval_gettext "Enabled deb-src in \${f_base}")"
+            # Also check sources.list (legacy and DEB822 formats) and .list files
+            if [[ -f /etc/apt/sources.list ]]; then
+                if grep -qE '^\s*deb-src\s' /etc/apt/sources.list 2>/dev/null \
+                    || grep -qE '^Types:.*deb-src' /etc/apt/sources.list 2>/dev/null; then
+                    sources_enabled=true
+                fi
+            fi
+            if [[ "$sources_enabled" == false ]]; then
+                for f in /etc/apt/sources.list.d/*.list; do
+                    [[ -e "$f" ]] || continue
+                    if grep -qE '^\s*deb-src\s' "$f" 2>/dev/null; then
+                        sources_enabled=true
+                        break
                     fi
                 done
-                sudo apt-get update -qq
-            else
-                log_error "$(gettext "Cannot proceed without source repositories.")"
-                log_error "$(gettext "Enable deb-src manually and try again.")"
-                exit 1
             fi
         fi
 
         if [[ "$sources_enabled" == true ]]; then
-            log_success "$(gettext "Source repositories are enabled (DEB822 format).")"
+            log_success "$(gettext "Source repositories are enabled.")"
+            return
+        fi
+
+        log_warn "$(gettext "Source repositories (deb-src) are not enabled.")"
+        log_info "$(gettext "DEB822 format detected in sources configuration.")"
+        echo ""
+        read -rp "  $(gettext "Allow modifying apt sources to add deb-src? [y/N] ")" confirm
+        echo ""
+        if [[ "$confirm" =~ ^[Yy]$ ]]; then
+            for f in "${deb822_files[@]}"; do
+                if grep -qE '^Types:\s*deb\s*$' "$f"; then
+                    sudo sed -i 's/^Types:\s*deb\s*$/Types: deb deb-src/' "$f"
+                    f_base="$(basename "$f")"
+                    export f_base
+                    log_success "$(eval_gettext "Enabled deb-src in \${f_base}")"
+                fi
+            done
+            sudo apt-get update -qq
+        else
+            log_error "$(gettext "Cannot proceed without source repositories.")"
+            log_error "$(gettext "Enable deb-src manually and try again.")"
+            exit 1
         fi
         return
     fi
