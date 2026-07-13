@@ -81,14 +81,15 @@ jobs:
       - name: Build .deb package
         run: |
           dpkg-buildpackage -us -uc -b
+          cp ../*.deb ../*.changes .
 
       - name: Upload .deb as artifact
         uses: actions/upload-artifact@v4
         with:
           name: optimize-${{ steps.version.outputs.upstream_version }}
           path: |
-            ../optimize_*.deb
-            ../optimize_*.changes
+            optimize_*.deb
+            optimize_*.changes
           retention-days: 30
 
       - name: Create GitHub Release
@@ -111,8 +112,8 @@ jobs:
             sudo apt-get install -f
             ```
           files: |
-            ../optimize_${{ steps.version.outputs.full_version }}_all.deb
-            ../optimize_${{ steps.version.outputs.full_version }}_all.changes
+            optimize_${{ steps.version.outputs.full_version }}_all.deb
+            optimize_${{ steps.version.outputs.full_version }}_all.changes
           draft: false
           prerelease: false
         env:
