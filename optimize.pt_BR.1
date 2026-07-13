@@ -1,0 +1,43 @@
+.TH OPTIMIZE 1 "Julho 2026" "1.0.0" "Manual do optimize"
+.SH NOME
+optimize \- Compila pacotes Debian/Ubuntu otimizados a partir do código-fonte
+.SH SINOPSE
+.B optimize
+[\fB-c\fR|\fB--cflags\fR \fIFLAGS\fR]
+[\fB-x\fR|\fB--cxxflags\fR \fIFLAGS\fR]
+[\fB-j\fR|\fB--jobs\fR \fIN\fR]
+.I nome-do-pacote
+.PP
+.B optimize
+[\fB-h\fR|\fB--help\fR]
+.PP
+.B optimize
+[\fB-V\fR|\fB--version\fR]
+.SH DESCRIÇÃO
+.B optimize
+é um substituto moderno e robusto para o antigo apt-build. Ele automatiza o processo de download, compilação e otimização de pacotes Debian e Ubuntu a partir do código-fonte em um ambiente chroot limpo e isolado usando o \fBsbuild\fR.
+.PP
+Garante que os pacotes sejam construídos com otimizações específicas para o hardware local (como \fB-O3\fR e \fB-march=native\fR) de forma segura, sem comprometer a estabilidade do seu sistema hospedeiro.
+.SH OPÇÕES
+.TP
+\fB-c\fR, \fB--cflags\fR \fIFLAGS\fR
+Define flags personalizadas para o compilador C. Padrão: \fI-O3 -march=native -pipe\fR.
+.TP
+\fB-x\fR, \fB--cxxflags\fR \fIFLAGS\fR
+Define flags personalizadas para o compilador C++. Padrão: \fI-O3 -march=native -pipe\fR.
+.TP
+\fB-j\fR, \fB--jobs\fR \fIN\fR
+Especifica o número de trabalhos (jobs) paralelos de compilação. O padrão é detecção automática via \fBnproc\fR.
+.TP
+\fB-h\fR, \fB--help\fR
+Exibe a mensagem de ajuda e sai.
+.TP
+\fB-V\fR, \fB--version\fR
+Exibe as informações da versão e sai.
+.SH AMBIENTE
+.B optimize
+configura automaticamente o ambiente de construção injetando variáveis no arquivo \fB~/.sbuildrc\fR. Ele depende das variáveis padrão de compilação do Debian, como \fBDEB_CFLAGS_APPEND\fR.
+.SH VEJA TAMBÉM
+.BR apt-get (8),
+.BR sbuild (1),
+.BR schroot (1)

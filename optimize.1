@@ -1,0 +1,43 @@
+.TH OPTIMIZE 1 "July 2026" "1.0.0" "optimize manual"
+.SH NAME
+optimize \- Build optimized Debian/Ubuntu packages from source
+.SH SYNOPSIS
+.B optimize
+[\fB-c\fR|\fB--cflags\fR \fIFLAGS\fR]
+[\fB-x\fR|\fB--cxxflags\fR \fIFLAGS\fR]
+[\fB-j\fR|\fB--jobs\fR \fIN\fR]
+.I package-name
+.PP
+.B optimize
+[\fB-h\fR|\fB--help\fR]
+.PP
+.B optimize
+[\fB-V\fR|\fB--version\fR]
+.SH DESCRIPTION
+.B optimize
+is a modern, robust replacement for apt-build. It automates the process of downloading, compiling, and optimizing Debian and Ubuntu packages from source in a clean, isolated chroot environment using \fBsbuild\fR.
+.PP
+It ensures packages are built with hardware-specific optimizations (such as \fB-O3\fR and \fB-march=native\fR) safely, without risking the stability of your host system.
+.SH OPTIONS
+.TP
+\fB-c\fR, \fB--cflags\fR \fIFLAGS\fR
+Set custom C compiler flags. Default: \fI-O3 -march=native -pipe\fR.
+.TP
+\fB-x\fR, \fB--cxxflags\fR \fIFLAGS\fR
+Set custom C++ compiler flags. Default: \fI-O3 -march=native -pipe\fR.
+.TP
+\fB-j\fR, \fB--jobs\fR \fIN\fR
+Specify the number of parallel build jobs. Defaults to automatic detection via \fBnproc\fR.
+.TP
+\fB-h\fR, \fB--help\fR
+Show the help message and exit.
+.TP
+\fB-V\fR, \fB--version\fR
+Show version information and exit.
+.SH ENVIRONMENT
+.B optimize
+automatically configures the build environment by injecting variables into the \fB~/.sbuildrc\fR file. It relies on standard Debian build variables like \fBDEB_CFLAGS_APPEND\fR.
+.SH SEE ALSO
+.BR apt-get (8),
+.BR sbuild (1),
+.BR schroot (1)

@@ -1,0 +1,473 @@
+# Portuguese translations for optimize package
+# Traduções em português brasileiro para o pacote optimize.
+# Copyright (C) 2026 THE optimize'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the optimize package.
+# Automatically generated, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: optimize 1.0.0\n"
+"Report-Msgid-Bugs-To: helton@example.com\n"
+"POT-Creation-Date: 2026-07-12 13:09-0300\n"
+"PO-Revision-Date: 2026-07-12 12:44-0300\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: Portuguese (Brazil) <pt_BR@li.org>\n"
+"Language: pt_BR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: optimize:85
+#, sh-format
+msgid "Cleaning up temporary directory: ${TEMP_DIR}"
+msgstr "Limpando diretório temporário: ${TEMP_DIR}"
+
+#: optimize:89
+#, sh-format
+msgid "Script terminated with errors (exit code: ${exit_code})"
+msgstr "Script encerrado com erros (código de saída: ${exit_code})"
+
+#: optimize:101 optimize:550
+msgid "Build optimized Debian/Ubuntu packages from source"
+msgstr "Compila pacotes Debian/Ubuntu otimizados a partir do código-fonte"
+
+#: optimize:141
+msgid "Detecting system environment..."
+msgstr "Detectando ambiente do sistema..."
+
+#: optimize:145
+msgid "/etc/os-release not found. Is this a Debian-based system?"
+msgstr "/etc/os-release não encontrado. Este é um sistema baseado em Debian?"
+
+#: optimize:166
+#, sh-format
+msgid "Unsupported distribution: ${DISTRO_STR}"
+msgstr "Distribuição não suportada: ${DISTRO_STR}"
+
+#: optimize:167
+msgid "This tool requires a Debian or Ubuntu-based system."
+msgstr "Esta ferramenta requer um sistema baseado em Debian ou Ubuntu."
+
+#: optimize:180
+msgid "Cannot determine distribution codename."
+msgstr "Não foi possível determinar o codinome da distribuição."
+
+#: optimize:181
+msgid "Neither VERSION_CODENAME nor lsb_release are available."
+msgstr "Nem VERSION_CODENAME nem lsb_release estão disponíveis."
+
+#: optimize:188
+#, sh-format
+msgid "Distribution codename is invalid: '${SUITE}'"
+msgstr "O codinome da distribuição é inválido: '${SUITE}'"
+
+#: optimize:194
+msgid "'dpkg' not found. Is this a Debian-based system?"
+msgstr "'dpkg' não encontrado. Este é um sistema baseado em Debian?"
+
+#: optimize:201
+#, sh-format
+msgid "Distribution: ${DISTRO_STR}"
+msgstr "Distribuição: ${DISTRO_STR}"
+
+#: optimize:202
+#, sh-format
+msgid ""
+"Base: ${DISTRO_BASE} | ID: ${DISTRO_ID} | Suite: ${SUITE} | Arch: ${ARCH}"
+msgstr ""
+"Base: ${DISTRO_BASE} | ID: ${DISTRO_ID} | Suite: ${SUITE} | Arch: ${ARCH}"
+
+#: optimize:211
+msgid "Checking source repositories (deb-src)..."
+msgstr "Verificando repositórios de código-fonte (deb-src)..."
+
+#: optimize:228 optimize:273
+msgid "Source repositories (deb-src) are not enabled."
+msgstr "Repositórios de código-fonte (deb-src) não estão habilitados."
+
+#: optimize:229
+msgid "DEB822 format detected in sources configuration."
+msgstr "Formato DEB822 detectado na configuração de fontes."
+
+#: optimize:231
+msgid "Allow modifying apt sources to add deb-src? [y/N] "
+msgstr ""
+"Permitir a modificação das fontes do apt para adicionar deb-src? [s/N] "
+
+#: optimize:239
+#, sh-format
+msgid "Enabled deb-src in ${f_base}"
+msgstr "deb-src habilitado em ${f_base}"
+
+#: optimize:244 optimize:286
+msgid "Cannot proceed without source repositories."
+msgstr "Não é possível prosseguir sem os repositórios de código-fonte."
+
+#: optimize:245 optimize:287
+msgid "Enable deb-src manually and try again."
+msgstr "Habilite deb-src manualmente e tente novamente."
+
+#: optimize:251
+msgid "Source repositories are enabled (DEB822 format)."
+msgstr "Repositórios de código-fonte habilitados (formato DEB822)."
+
+#: optimize:279
+msgid "Uncomment deb-src lines in sources.list? [y/N] "
+msgstr "Descomentar linhas deb-src no sources.list? [s/N] "
+
+#: optimize:284
+msgid "Source repositories enabled."
+msgstr "Repositórios de código-fonte habilitados."
+
+#: optimize:291
+msgid "No source repositories found and no commented deb-src"
+msgstr ""
+"Nenhum repositório de fonte encontrado e nenhuma linha deb-src comentada"
+
+#: optimize:292
+msgid "lines detected. Please add deb-src entries manually."
+msgstr "foi detectada. Por favor, adicione entradas deb-src manualmente."
+
+#: optimize:296
+msgid "Source repositories are enabled."
+msgstr "Repositórios de código-fonte habilitados."
+
+#: optimize:304
+#, sh-format
+msgid "Checking sbuild chroot for ${SUITE}-${ARCH}..."
+msgstr "Verificando chroot do sbuild para ${SUITE}-${ARCH}..."
+
+#: optimize:311
+#, sh-format
+msgid "Chroot '${chroot_name}' already exists."
+msgstr "O chroot '${chroot_name}' já existe."
+
+#: optimize:320
+#, sh-format
+msgid "Chroot tarball found for ${SUITE}-${ARCH}."
+msgstr "Tarball do chroot encontrado para ${SUITE}-${ARCH}."
+
+#: optimize:327
+#, sh-format
+msgid "Chroot tarball found for ${SUITE}-${ARCH} (system-wide)."
+msgstr "Tarball do chroot encontrado para ${SUITE}-${ARCH} (no sistema)."
+
+#: optimize:331
+#, sh-format
+msgid "No chroot found for ${SUITE}-${ARCH}."
+msgstr "Nenhum chroot encontrado para ${SUITE}-${ARCH}."
+
+#: optimize:332
+msgid "Creating a new sbuild chroot (this may take several minutes)..."
+msgstr "Criando um novo chroot do sbuild (isso pode levar vários minutos)..."
+
+#: optimize:357
+#, sh-format
+msgid "Chroot created for ${SUITE}-${ARCH}."
+msgstr "Chroot criado para ${SUITE}-${ARCH}."
+
+#: optimize:364
+msgid "Configuring optimization flags..."
+msgstr "Configurando flags de otimização..."
+
+#: optimize:417
+#, sh-format
+msgid "Downloading source for '${PACKAGE}'..."
+msgstr "Baixando o código-fonte para '${PACKAGE}'..."
+
+#: optimize:423
+#, sh-format
+msgid "Working directory: ${DIM}${TEMP_DIR}${NC}"
+msgstr "Diretório de trabalho: ${DIM}${TEMP_DIR}${NC}"
+
+#: optimize:428
+#, sh-format
+msgid "Failed to download source for '${PACKAGE}'."
+msgstr "Falha ao baixar o código-fonte para '${PACKAGE}'."
+
+#: optimize:429
+msgid "Please verify:"
+msgstr "Por favor verifique:"
+
+#: optimize:430
+msgid "  • The package name is correct"
+msgstr "  • O nome do pacote está correto"
+
+#: optimize:431
+msgid "  • Source repositories (deb-src) are enabled"
+msgstr "  • Os repositórios de fonte (deb-src) estão habilitados"
+
+#: optimize:432
+msgid "  • You have an internet connection"
+msgstr "  • Você possui conexão com a internet"
+
+#: optimize:446
+msgid "Source directory not found or missing debian/ directory."
+msgstr ""
+"Diretório do código-fonte não encontrado ou faltando diretório debian/."
+
+#: optimize:447
+msgid "The package may not have a standard Debian source layout."
+msgstr "O pacote pode não ter um layout padrão de código-fonte Debian."
+
+#: optimize:453
+#, sh-format
+msgid "Source downloaded: ${BOLD}${SOURCE_DIR_BASE}${NC}"
+msgstr "Código-fonte baixado: ${BOLD}${SOURCE_DIR_BASE}${NC}"
+
+#: optimize:460
+#, sh-format
+msgid "Building '${PACKAGE}' in isolated chroot..."
+msgstr "Construindo '${PACKAGE}' em chroot isolado..."
+
+#: optimize:464
+msgid "Distribution"
+msgstr "Distribuição"
+
+#: optimize:465
+msgid "Architecture"
+msgstr "Arquitetura"
+
+#: optimize:467
+msgid "Source"
+msgstr "Código-fonte"
+
+#: optimize:470
+msgid "This may take a while depending on the package complexity."
+msgstr "Isso pode demorar dependendo da complexidade do pacote."
+
+#: optimize:480
+#, sh-format
+msgid "Build FAILED for '${PACKAGE}'."
+msgstr "FALHA na construção para '${PACKAGE}'."
+
+#: optimize:481
+msgid "Review the build log above for details."
+msgstr "Revise o log de construção acima para obter detalhes."
+
+#: optimize:485
+msgid "Build completed successfully!"
+msgstr "Construção concluída com sucesso!"
+
+#: optimize:492
+msgid "Collecting built packages..."
+msgstr "Coletando pacotes construídos..."
+
+#: optimize:509
+msgid "No .deb files were produced by the build."
+msgstr "Nenhum arquivo .deb foi gerado pela construção."
+
+#: optimize:510
+msgid "Check the build output above for errors."
+msgstr "Verifique a saída de construção acima para erros."
+
+#: optimize:515
+#, sh-format
+msgid "${deb_count} package(s) built successfully!"
+msgstr "${deb_count} pacote(s) construído(s) com sucesso!"
+
+#: optimize:517
+msgid "Output directory:"
+msgstr "Diretório de saída:"
+
+#: optimize:520
+msgid "Built packages:"
+msgstr "Pacotes construídos:"
+
+#: optimize:527
+msgid "Do you want to install the generated packages now? [Y/n] "
+msgstr "Deseja instalar os pacotes gerados agora? [S/n] "
+
+#: optimize:530
+msgid "Installing packages..."
+msgstr "Instalando pacotes..."
+
+#: optimize:536
+msgid "Packages installed successfully."
+msgstr "Pacotes instalados com sucesso."
+
+#: optimize:539
+msgid "These packages were compiled with -march=native."
+msgstr "Esses pacotes foram compilados com -march=native."
+
+#: optimize:540
+msgid "They are optimized for THIS machine's CPU and"
+msgstr "Eles são otimizados para a CPU DESTA máquina e"
+
+#: optimize:541
+msgid "may not work correctly on different hardware."
+msgstr "podem não funcionar corretamente em um hardware diferente."
+
+#: optimize:552
+msgid "USAGE"
+msgstr "USO"
+
+#: optimize:555
+msgid "OPTIONS"
+msgstr "OPÇÕES"
+
+#: optimize:556
+msgid "Custom CFLAGS"
+msgstr "CFLAGS personalizadas"
+
+#: optimize:556 optimize:557 optimize:558
+msgid "default"
+msgstr "padrão"
+
+#: optimize:557
+msgid "Custom CXXFLAGS"
+msgstr "CXXFLAGS personalizadas"
+
+#: optimize:558
+msgid "Parallel build jobs"
+msgstr "Trabalhos de compilação em paralelo"
+
+#: optimize:558
+msgid "auto via nproc"
+msgstr "automático via nproc"
+
+#: optimize:559
+msgid "Show this help message"
+msgstr "Mostra esta mensagem de ajuda"
+
+#: optimize:560
+msgid "Show version information"
+msgstr "Mostra informações da versão"
+
+#: optimize:562
+msgid "EXAMPLES"
+msgstr "EXEMPLOS"
+
+#: optimize:563
+msgid "Build nginx with default flags"
+msgstr "Compila nginx com flags padrão"
+
+#: optimize:564
+msgid "Custom optimization flags"
+msgstr "Flags de otimização personalizadas"
+
+#: optimize:565
+msgid "Limit to 4 parallel jobs"
+msgstr "Limita a 4 trabalhos em paralelo"
+
+#: optimize:566
+msgid "Build a small test package"
+msgstr "Compila um pacote pequeno de teste"
+
+#: optimize:568
+msgid "HOW IT WORKS"
+msgstr "COMO FUNCIONA"
+
+#: optimize:569
+msgid "Detects your distribution, codename, and CPU architecture"
+msgstr "Detecta sua distribuição, codinome e arquitetura de CPU"
+
+#: optimize:570
+msgid "Ensures sbuild and a clean chroot environment are set up"
+msgstr "Garante que o sbuild e um ambiente chroot limpo estejam configurados"
+
+#: optimize:571
+msgid "Downloads the official source package via apt"
+msgstr "Baixa o pacote de fonte oficial via apt"
+
+#: optimize:572
+msgid "Compiles in an isolated chroot with your optimization flags"
+msgstr "Compila em um chroot isolado com suas flags de otimização"
+
+#: optimize:573
+msgid "Delivers the optimized .deb files to your current directory"
+msgstr "Entrega os arquivos .deb otimizados em seu diretório atual"
+
+#: optimize:575
+msgid "SUPPORTED SYSTEMS"
+msgstr "SISTEMAS SUPORTADOS"
+
+#: optimize:576
+msgid "Debian (bookworm, trixie, sid, ...) and all derivatives:"
+msgstr "Debian (bookworm, trixie, sid, ...) e todos os derivados:"
+
+#: optimize:577
+msgid "Ubuntu, Linux Mint, Pop!_OS, MX Linux, Zorin OS, and more."
+msgstr "Ubuntu, Linux Mint, Pop!_OS, MX Linux, Zorin OS e outros."
+
+#: optimize:611
+#, sh-format
+msgid "Unknown option: ${unknown_opt}"
+msgstr "Opção desconhecida: ${unknown_opt}"
+
+#: optimize:619
+#, sh-format
+msgid "Multiple package names specified: '${prev_pkg}' and '${cur_pkg}'"
+msgstr "Múltiplos nomes de pacotes especificados: '${prev_pkg}' e '${cur_pkg}'"
+
+#: optimize:620
+msgid "Only one package can be built at a time."
+msgstr "Apenas um pacote pode ser construído de cada vez."
+
+#: optimize:632
+msgid "No package name provided."
+msgstr "Nenhum nome de pacote fornecido."
+
+#: optimize:638
+msgid "Verifying sudo access..."
+msgstr "Verificando acesso sudo..."
+
+#: optimize:640
+msgid "This script requires sudo privileges."
+msgstr "Este script requer privilégios sudo."
+
+#: optimize:641
+msgid "Please run with a user that has sudo access."
+msgstr "Por favor, execute com um usuário que tenha acesso sudo."
+
+#: optimize:651
+#, sh-format
+msgid "Building package: ${BOLD}${PACKAGE}${NC}"
+msgstr "Construindo pacote: ${BOLD}${PACKAGE}${NC}"
+
+#: optimize:663
+msgid "All done!"
+msgstr "Tudo pronto!"
+
+#~ msgid "Checking required dependencies..."
+#~ msgstr "Verificando dependências necessárias..."
+
+#, sh-format
+#~ msgid "Missing packages: ${missing_pkgs_str}"
+#~ msgstr "Pacotes ausentes: ${missing_pkgs_str}"
+
+#~ msgid "Installing missing dependencies..."
+#~ msgstr "Instalando dependências ausentes..."
+
+#~ msgid "Dependencies installed."
+#~ msgstr "Dependências instaladas."
+
+#~ msgid "All dependencies are present."
+#~ msgstr "Todas as dependências estão presentes."
+
+#, sh-format
+#~ msgid "User '${USER}' is not in the 'sbuild' group."
+#~ msgstr "O usuário '${USER}' não está no grupo 'sbuild'."
+
+#, sh-format
+#~ msgid "Adding '${USER}' to the 'sbuild' group..."
+#~ msgstr "Adicionando '${USER}' ao grupo 'sbuild'..."
+
+#~ msgid "Group membership updated. You may need to log out and"
+#~ msgstr "Adesão ao grupo atualizada. Você pode precisar deslogar e"
+
+#~ msgid "log back in, or run: newgrp sbuild"
+#~ msgstr "logar novamente, ou executar: newgrp sbuild"
+
+#~ msgid "Then re-run this script."
+#~ msgstr "Depois execute este script novamente."
+
+#~ msgid "Cannot continue without sbuild group membership."
+#~ msgstr "Não é possível continuar sem pertencer ao grupo sbuild."
+
+#~ msgid "Please log out and log back in, then try again."
+#~ msgstr "Por favor, saia da sessão, entre novamente e tente outra vez."
+
+#~ msgid "To install, run:"
+#~ msgstr "Para instalar, execute:"
