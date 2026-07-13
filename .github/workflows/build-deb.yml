@@ -3,8 +3,6 @@ name: Build & Publish .deb
 on:
   push:
     branches: [main]
-    paths:
-      - 'debian/changelog'
   workflow_dispatch:
 
 permissions:
@@ -16,6 +14,19 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check if changelog changed
+        id: check
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          elif git diff --name-only HEAD~1 HEAD | grep -q "debian/changelog"; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Install build dependencies
         run: |
@@ -80,7 +91,7 @@ jobs:
           retention-days: 30
 
       - name: Create GitHub Release
-        if: success()
+        if: steps.check.outputs.changed == 'true'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.version.outputs.tag_name }}
