@@ -63,7 +63,12 @@ jobs:
           RELEASE_NOTES=$(awk '
             /^[a-zA-Z].*\(/ { if (found) exit; found=1; next }
             /^ --/ { next }
-            found && /^[[:space:]]+\*/ { gsub(/^[[:space:]]+\*/, "-"); print }
+            found && /^[[:space:]]*$/ { print ""; next }
+            found && /^[[:space:]]+\*/ {
+              sub(/^[[:space:]]+\*[[:space:]]*/, "- ")
+              print; next
+            }
+            found { sub(/^[[:space:]]{2}/, "  "); print }
           ' debian/changelog)
 
           # Write multi-line output
