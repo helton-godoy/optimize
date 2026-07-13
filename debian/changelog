@@ -1,0 +1,20 @@
+optimize (1.0.6-1) UNRELEASED; urgency=medium
+
+  * Update installation method to use dpkg --force-overwrite and
+    automatically fix broken dependencies.
+  * Implement --kernel optimization flag using localmodconfig and
+    KCFLAGS
+  * Update README to document the --kernel parameter
+  * Fix --kernel source package detection by querying linux-headers
+    instead of linux-image
+  * Fix make localmodconfig pipefail crash
+  * Fix kernel build: Add libdw-dev dependency and use --set-str for
+    trust keys
+
+ -- helton <chileno.brasil@gmail.com>  Sun, 12 Jul 2026 18:46:32 -0300
+
+optimize (1.0.0-1) unstable; urgency=medium
+
+  * Initial release.
+
+ -- Comunidade Optimize <chileno.brasil@gmail.com>  Sun, 12 Jul 2026 12:00:00 -0300

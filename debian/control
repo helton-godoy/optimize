@@ -1,0 +1,12 @@
+Source: optimize
+Section: utils
+Priority: optional
+Maintainer: Comunidade Optimize <chileno.brasil@gmail.com>
+Build-Depends: debhelper-compat (= 13), gettext
+Standards-Version: 4.6.2
+
+Package: optimize
+Architecture: all
+Depends: ${misc:Depends}, sbuild, schroot, gettext-base, dpkg-dev, devscripts
+Description: Compilador otimizado de pacotes Debian/Ubuntu a partir do codigo-fonte
+ Um substituto moderno e isolado para o apt-build.

@@ -1,0 +1,112 @@
+name: Build & Publish .deb
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'debian/changelog'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-deb:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            debhelper \
+            debhelper-compat \
+            gettext \
+            gettext-base \
+            dpkg-dev \
+            devscripts \
+            fakeroot
+
+      - name: Validate changelog
+        run: |
+          dpkg-parsechangelog -l debian/changelog
+
+      - name: Extract version and release notes
+        id: version
+        run: |
+          # Extract version from latest changelog entry
+          CHANGELOG_LINE=$(head -1 debian/changelog)
+          PKG_NAME=$(echo "$CHANGELOG_LINE" | cut -d' ' -f1)
+          FULL_VERSION=$(echo "$CHANGELOG_LINE" | cut -d'(' -f2 | cut -d')' -f1)
+          UPSTREAM_VERSION=$(echo "$FULL_VERSION" | sed 's/-[0-9]*$//')
+
+          echo "pkg_name=$PKG_NAME" >> "$GITHUB_OUTPUT"
+          echo "full_version=$FULL_VERSION" >> "$GITHUB_OUTPUT"
+          echo "upstream_version=$UPSTREAM_VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag_name=v$UPSTREAM_VERSION" >> "$GITHUB_OUTPUT"
+
+          # Extract release notes (lines between first and second version entries)
+          RELEASE_NOTES=$(awk '
+            /^[a-zA-Z].*\(/ { if (found) exit; found=1; next }
+            /^ --/ { next }
+            found && /^[[:space:]]+\*/ { gsub(/^[[:space:]]+\*/, "-"); print }
+          ' debian/changelog)
+
+          # Write multi-line output
+          {
+            echo "release_notes<<RELEASE_NOTES_EOF"
+            echo "$RELEASE_NOTES"
+            echo "RELEASE_NOTES_EOF"
+          } >> "$GITHUB_OUTPUT"
+
+          echo "### Build Info" >> "$GITHUB_OUTPUT"
+          echo "- Package: \`$PKG_NAME\`" >> "$GITHUB_OUTPUT"
+          echo "- Version: \`$FULL_VERSION\`" >> "$GITHUB_OUTPUT"
+          echo "" >> "$GITHUB_OUTPUT"
+
+      - name: Configure git
+        run: |
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Build .deb package
+        run: |
+          dpkg-buildpackage -us -uc -b
+
+      - name: Upload .deb as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: optimize-${{ steps.version.outputs.upstream_version }}
+          path: |
+            ../optimize_*.deb
+            ../optimize_*.changes
+          retention-days: 30
+
+      - name: Create GitHub Release
+        if: success()
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.tag_name }}
+          name: "optimize ${{ steps.version.outputs.upstream_version }}"
+          body: |
+            ## Changelog
+
+            ${{ steps.version.outputs.release_notes }}
+
+            ---
+
+            **Instalacao:**
+
+            ```bash
+            sudo dpkg --force-overwrite -i optimize_${{ steps.version.outputs.full_version }}_all.deb
+            sudo apt-get install -f
+            ```
+          files: |
+            ../optimize_${{ steps.version.outputs.full_version }}_all.deb
+            ../optimize_${{ steps.version.outputs.full_version }}_all.changes
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
