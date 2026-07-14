@@ -26,7 +26,7 @@ A modern replacement for `apt-build`. Downloads official source packages, compil
 
 ```bash
 # Clone the repository
-git clone https://github.com/helton/optimize.git
+git clone https://github.com/helton-godoy/optimize.git
 cd optimize
 
 # Make the script executable
