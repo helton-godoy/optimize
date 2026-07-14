@@ -1,3 +1,10 @@
+optimize (1.0.9-1) unstable; urgency=medium
+
+  * Fix bash set -e pipefail crash on empty dpkg-query when 
+    kernel source package is not found
+
+ -- helton <chileno.brasil@gmail.com>  Tue, 14 Jul 2026 08:52:00 -0300
+
 optimize (1.0.8-1) unstable; urgency=medium
 
   * Suppress dpkg-query errors and implement fallbacks (linux-image, apt-cache, linux)

@@ -626,15 +626,15 @@ build_custom_kernel() {
     log_info "$(eval_gettext "Current Kernel: \${current_kernel}")"
 
     local source_pkg=""
-    source_pkg="$(dpkg-query -W -f='${source:Package}\n' "linux-headers-${current_kernel}" 2>/dev/null | head -n1)"
+    source_pkg="$(dpkg-query -W -f='${source:Package}\n' "linux-headers-${current_kernel}" 2>/dev/null | head -n1 || true)"
     if [[ -z "$source_pkg" ]]; then
-        source_pkg="$(dpkg-query -W -f='${source:Package}\n' "linux-image-${current_kernel}" 2>/dev/null | head -n1)"
+        source_pkg="$(dpkg-query -W -f='${source:Package}\n' "linux-image-${current_kernel}" 2>/dev/null | head -n1 || true)"
     fi
     if [[ -z "$source_pkg" ]]; then
-        source_pkg="$(apt-cache show "linux-headers-${current_kernel}" 2>/dev/null | awk '/^Source:/ {print $2}' | head -n1)"
+        source_pkg="$(apt-cache show "linux-headers-${current_kernel}" 2>/dev/null | awk '/^Source:/ {print $2}' | head -n1 || true)"
     fi
     if [[ -z "$source_pkg" ]]; then
-        source_pkg="$(apt-cache show "linux-image-${current_kernel}" 2>/dev/null | awk '/^Source:/ {print $2}' | head -n1)"
+        source_pkg="$(apt-cache show "linux-image-${current_kernel}" 2>/dev/null | awk '/^Source:/ {print $2}' | head -n1 || true)"
     fi
     if [[ -z "$source_pkg" ]]; then
         log_info "$(gettext "Could not determine source package automatically. Defaulting to 'linux'.")"
