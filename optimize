@@ -625,11 +625,20 @@ build_custom_kernel() {
     current_kernel="$(uname -r)"
     log_info "$(eval_gettext "Current Kernel: \${current_kernel}")"
 
-    local source_pkg
-    source_pkg="$(dpkg-query -W -f='${source:Package}\n' "linux-headers-${current_kernel}" | head -n1)"
+    local source_pkg=""
+    source_pkg="$(dpkg-query -W -f='${source:Package}\n' "linux-headers-${current_kernel}" 2>/dev/null | head -n1)"
     if [[ -z "$source_pkg" ]]; then
-        log_error "$(gettext "Failed to determine the source package for the current kernel.")"
-        exit 1
+        source_pkg="$(dpkg-query -W -f='${source:Package}\n' "linux-image-${current_kernel}" 2>/dev/null | head -n1)"
+    fi
+    if [[ -z "$source_pkg" ]]; then
+        source_pkg="$(apt-cache show "linux-headers-${current_kernel}" 2>/dev/null | awk '/^Source:/ {print $2}' | head -n1)"
+    fi
+    if [[ -z "$source_pkg" ]]; then
+        source_pkg="$(apt-cache show "linux-image-${current_kernel}" 2>/dev/null | awk '/^Source:/ {print $2}' | head -n1)"
+    fi
+    if [[ -z "$source_pkg" ]]; then
+        log_info "$(gettext "Could not determine source package automatically. Defaulting to 'linux'.")"
+        source_pkg="linux"
     fi
     log_info "$(eval_gettext "Source package: \${source_pkg}")"
 
@@ -645,7 +654,9 @@ build_custom_kernel() {
     # Install build dependencies on host
     log_info "$(gettext "Installing kernel build dependencies...")"
     sudo apt-get update -qq
-    sudo apt-get install -y build-essential libncurses-dev bison flex libssl-dev libelf-dev bc rsync kmod cpio libdw-dev dwarves || true
+    sudo apt-get install -y build-essential dpkg-dev libncurses-dev bison flex libssl-dev libelf-dev bc rsync kmod cpio libdw-dev dwarves || true
+    log_info "$(eval_gettext "Installing source dependencies for '\${source_pkg}'...")"
+    sudo apt-get build-dep -y "$source_pkg" || true
 
     log_step "$(eval_gettext "Downloading source for '\${source_pkg}'...")"
     if ! apt-get source "$source_pkg"; then
@@ -670,18 +681,27 @@ build_custom_kernel() {
     cd "$src_dir"
 
     log_step "$(gettext "Configuring Kernel for Local Hardware (localmodconfig)...")"
-    cp "/boot/config-${current_kernel}" .config
+    if [[ -f "/boot/config-${current_kernel}" ]]; then
+        cp "/boot/config-${current_kernel}" .config
+    elif [[ -f "/proc/config.gz" ]]; then
+        zcat /proc/config.gz > .config
+    else
+        log_info "$(gettext "No config found in /boot or /proc. Using defconfig.")"
+        make defconfig || true
+    fi
     
     # Accept default for any new config options and trim modules
     set +o pipefail
-    yes "" | make localmodconfig
+    yes "" | make localmodconfig 2>/dev/null || true
     set -o pipefail
 
     # Disable keys requirement to avoid build failures
-    log_info "$(gettext "Disabling Canonical trust keys for custom build...")"
-    scripts/config --set-str SYSTEM_TRUSTED_KEYS ""
-    scripts/config --set-str SYSTEM_REVOCATION_KEYS ""
-    scripts/config --set-str CONFIG_LOCALVERSION "-optimized"
+    if [[ -x scripts/config ]]; then
+        log_info "$(gettext "Disabling Canonical trust keys for custom build...")"
+        scripts/config --set-str SYSTEM_TRUSTED_KEYS "" || true
+        scripts/config --set-str SYSTEM_REVOCATION_KEYS "" || true
+        scripts/config --set-str CONFIG_LOCALVERSION "-optimized" || true
+    fi
 
     # Optimization 2: KCFLAGS
     export KCFLAGS="-march=native -O2 -pipe"

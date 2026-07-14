@@ -1,9 +1,14 @@
-optimize (1.0.7-1) UNRELEASED; urgency=medium
+optimize (1.0.7-1) unstable; urgency=medium
 
   * Fix false deb-src warning when .sources files exist but
     deb-src is configured in legacy sources.list
   * Also check /etc/apt/sources.list and .list files before
     concluding deb-src is not enabled
+  * Suppress dpkg-query errors and implement fallbacks (linux-image, apt-cache, linux)
+    for better kernel source package resolution
+  * Improve .config detection (checks /boot, /proc/config.gz, falls back to defconfig)
+  * Enhance kernel build process resilience by properly handling non-fatal errors
+  * Add automatic dependency resolution with apt-get build-dep
 
  -- helton <chileno.brasil@gmail.com>  Mon, 13 Jul 2026 12:00:00 -0300
 
