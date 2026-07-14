@@ -1,4 +1,10 @@
-optimize (1.0.10-1) UNRELEASED; urgency=medium
+optimize (1.0.11-1) UNRELEASED; urgency=medium
+
+  * Fix source package resolving to signed kernel breaking build-deps
+
+ -- helton <chileno.brasil@gmail.com>  Tue, 14 Jul 2026 10:44:11 -0300
+
+optimize (1.0.10-1) unstable; urgency=medium
 
   * Fix version display inside the script and support -v flag
 

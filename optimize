@@ -29,7 +29,7 @@ fi
 # =============================================================================
 # Constants
 # =============================================================================
-readonly OPTIMIZE_VERSION="1.0.10"
+readonly OPTIMIZE_VERSION="1.0.11"
 readonly SCRIPT_NAME="optimize"
 readonly DEFAULT_CFLAGS="-O3 -march=native -pipe"
 readonly DEFAULT_CXXFLAGS="-O3 -march=native -pipe"
@@ -640,6 +640,10 @@ build_custom_kernel() {
         log_info "$(gettext "Could not determine source package automatically. Defaulting to 'linux'.")"
         source_pkg="linux"
     fi
+    if [[ "$source_pkg" == *"signed"* ]]; then
+        log_info "$(gettext "Signed kernel package detected. Overriding source to 'linux'.")"
+        source_pkg="linux"
+    fi
     log_info "$(eval_gettext "Source package: \${source_pkg}")"
 
     TEMP_DIR="/var/cache/optimize/build/${source_pkg}_custom"
@@ -654,9 +658,9 @@ build_custom_kernel() {
     # Install build dependencies on host
     log_info "$(gettext "Installing kernel build dependencies...")"
     sudo apt-get update -qq
-    sudo apt-get install -y build-essential dpkg-dev libncurses-dev bison flex libssl-dev libelf-dev bc rsync kmod cpio libdw-dev dwarves || true
+    sudo apt-get install -y --no-remove build-essential dpkg-dev libncurses-dev bison flex libssl-dev libelf-dev bc rsync kmod cpio libdw-dev dwarves || true
     log_info "$(eval_gettext "Installing source dependencies for '\${source_pkg}'...")"
-    sudo apt-get build-dep -y "$source_pkg" || true
+    sudo apt-get build-dep -y -o APT::Get::Remove=false "$source_pkg" || true
 
     log_step "$(eval_gettext "Downloading source for '\${source_pkg}'...")"
     if ! apt-get source "$source_pkg"; then
