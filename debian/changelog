@@ -1,3 +1,9 @@
+optimize (1.0.10-1) UNRELEASED; urgency=medium
+
+  * Fix version display inside the script and support -v flag
+
+ -- helton <chileno.brasil@gmail.com>  Tue, 14 Jul 2026 09:00:56 -0300
+
 optimize (1.0.9-1) unstable; urgency=medium
 
   * Fix bash set -e pipefail crash on empty dpkg-query when 

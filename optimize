@@ -29,7 +29,7 @@ fi
 # =============================================================================
 # Constants
 # =============================================================================
-readonly OPTIMIZE_VERSION="1.0.0"
+readonly OPTIMIZE_VERSION="1.0.10"
 readonly SCRIPT_NAME="optimize"
 readonly DEFAULT_CFLAGS="-O3 -march=native -pipe"
 readonly DEFAULT_CXXFLAGS="-O3 -march=native -pipe"
@@ -787,7 +787,7 @@ main() {
                 show_banner
                 usage
                 exit 0 ;;
-            -V|--version)
+            -V|-v|--version)
                 echo "${SCRIPT_NAME} v${OPTIMIZE_VERSION}"
                 exit 0 ;;
             -*)

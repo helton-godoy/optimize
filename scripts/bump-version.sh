@@ -64,6 +64,9 @@ NEW_VERSION="$MAJOR.$MINOR.$PATCH"
 # Mark current version as released (replace UNRELEASED with unstable)
 sed -i "1s/UNRELEASED/unstable/" "$CHANGELOG"
 
+# Update hardcoded version inside the main script
+sed -i "s/^readonly OPTIMIZE_VERSION=\".*\"/readonly OPTIMIZE_VERSION=\"${NEW_VERSION}\"/" optimize
+
 # Prepend new UNRELEASED entry
 DATE=$(date -R)
 TEMP_FILE=$(mktemp)
