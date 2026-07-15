@@ -8,6 +8,9 @@ debian/files
 debian/optimize.substvars
 debian/optimize/
 
+# optimize output
+optimize-output/
+
 # Editor/IDE
 *.swp
 *.swo

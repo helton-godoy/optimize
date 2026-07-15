@@ -12,7 +12,7 @@ xgettext --language=Shell \
     --keyword=eval_gettext \
     --output=po/optimize.pot \
     --package-name=optimize \
-    --package-version=1.0.0 \
+    --package-version=2.0.0 \
     --msgid-bugs-address=helton@example.com \
     optimize
 

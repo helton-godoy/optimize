@@ -1,201 +1,148 @@
 # optimize
 
-> Build optimized Debian/Ubuntu packages from source with hardware-specific compiler flags.
+`optimize v2.0.0` rebuilds official Debian/Ubuntu source packages with
+hardware-aware optimization while preserving the normal Debian packaging flow.
 
-A modern replacement for `apt-build`. Downloads official source packages, compiles them in an isolated `sbuild` chroot with aggressive optimization flags (`-O3 -march=native -pipe`), and delivers ready-to-install `.deb` files — bringing Arch-style compilation to the Debian/Ubuntu ecosystem.
+The project is a spiritual successor to `apt-build`, but the central rule is
+different: `optimize` does not patch package sources or replace `debian/rules`.
+It orchestrates `sbuild`, uses the source package from the configured APT
+repositories, and changes only controlled build parameters.
 
-## ✨ Features
+## Goals
 
-- **Hardware-specific optimization** — Compiles packages with `-O3 -march=native -pipe` to leverage your CPU's full instruction set
-- **Custom Kernel Tailoring** — Use `--kernel` to automatically build a lean, native-optimized kernel trimmed strictly to your active hardware via `localmodconfig`
-- **Isolated builds** — Uses `sbuild` chroots to guarantee clean, reproducible builds that won't conflict with your system packages
-- **Universal compatibility** — Works on Debian and all derivatives: Ubuntu, Linux Mint, Pop!_OS, MX Linux, Zorin OS, and more
-- **Automatic environment detection** — Dynamically discovers your distribution, codename, and architecture — no hardcoded values
-- **Smart dependency management** — Auto-installs required tools (`sbuild`, `dpkg-dev`, `devscripts`, etc.) if missing
-- **Source repo handling** — Detects and enables `deb-src` repositories in both DEB822 and legacy formats
-- **Customizable flags** — Override default optimization flags via CLI for fine-tuned control
-- **Clean operation** — Automatic cleanup of temporary files, even on interruption
+- Rebuild official Debian/Ubuntu source packages in clean `sbuild` environments.
+- Preserve maintainer packaging logic, distribution patches, build dependencies,
+  hardening defaults, and package tests by default.
+- Offer hardware-aware optimization profiles with deterministic fallback.
+- Keep each rebuilt package identifiable through a local version suffix.
+- Produce a manifest with source, profile, flags, test mode, artifacts, and
+  checksums.
 
-## 📋 Requirements
+## Profiles
 
-- A **Debian-based** Linux distribution (Debian, Ubuntu, or any derivative)
-- **sudo** access
-- Internet connection (to download source packages and create chroots)
-
-## 🚀 Installation
-
-```bash
-# Clone the repository
-git clone https://github.com/helton-godoy/optimize.git
-cd optimize
-
-# Make the script executable
-chmod +x optimize
-
-# (Optional) Install system-wide
-sudo cp optimize /usr/local/bin/
-```
-
-## 📖 Usage
-
-### Basic Usage
-
-```bash
-# Build a package with default optimization flags
-./optimize nginx
-
-# Build the GNU hello package (great for testing)
-./optimize hello
-```
-
-### Custom Kernel Build
-
-Build a fully optimized kernel tailored specifically to your active hardware (disables unused modules via `localmodconfig` and applies `-march=native -O2`):
-
-```bash
-sudo ./optimize --kernel
-```
-
-### Custom Flags
-
-```bash
-# Use custom CFLAGS
-./optimize --cflags="-O2 -march=znver4 -pipe" zlib
-
-# Use custom CFLAGS and CXXFLAGS
-./optimize --cflags="-O2 -march=native" --cxxflags="-O2 -march=native" mesa
-```
-
-### Parallel Jobs
-
-```bash
-# Limit to 4 parallel build jobs
-./optimize -j4 mesa
-```
-
-### All Options
-
-```
-optimize [OPTIONS] <package-name>
-
-OPTIONS
-    -c, --cflags FLAGS      Custom CFLAGS   (default: "-O3 -march=native -pipe")
-    -x, --cxxflags FLAGS    Custom CXXFLAGS (default: "-O3 -march=native -pipe")
-    -j, --jobs N            Parallel build jobs (default: auto via nproc)
-    -k, --kernel            Build a custom tailored kernel for this hardware
-    -h, --help              Show help message
-    -V, --version           Show version information
-```
-
-## 🔧 How It Works
-
-```
-optimize nginx
-    │
-    ├─ 1. Detect OS & Architecture
-    │     └─ Reads /etc/os-release, resolves upstream codename
-    │
-    ├─ 2. Check Dependencies
-    │     └─ Installs sbuild, dpkg-dev, devscripts if missing
-    │
-    ├─ 3. Ensure Source Repos
-    │     └─ Verifies deb-src is enabled (DEB822 + legacy formats)
-    │
-    ├─ 4. Ensure Chroot Exists
-    │     └─ Creates sbuild chroot if needed (mk-sbuild or sbuild-createchroot)
-    │
-    ├─ 5. Configure Optimization Flags
-    │     └─ Injects flags into ~/.sbuildrc via $build_environment
-    │
-    ├─ 6. Download Source
-    │     └─ apt-get source <package> into /tmp/optimize.XXXXXXXXXX
-    │
-    ├─ 7. Build in Isolated Chroot
-    │     └─ sbuild -d <suite> --arch=<arch> --no-run-lintian -A
-    │
-    └─ 8. Deliver .deb Files
-          └─ Copies to your current directory with install instructions
-```
-
-## 🐧 Supported Distributions
-
-| Distribution | Base | Detection Method |
-|---|---|---|
-| **Debian** (bookworm, trixie, sid) | debian | `VERSION_CODENAME` |
-| **Ubuntu** (noble, jammy, focal) | ubuntu | `UBUNTU_CODENAME` |
-| **Linux Mint** (wilma, etc.) | ubuntu | `UBUNTU_CODENAME` → upstream |
-| **Pop!_OS** | ubuntu | `UBUNTU_CODENAME` |
-| **MX Linux** | debian | `VERSION_CODENAME` |
-| **Zorin OS** | ubuntu | `UBUNTU_CODENAME` |
-| **Other Debian derivatives** | auto | `ID_LIKE` chain |
-
-## ⚙️ Configuration
-
-### Optimization Flags
-
-The script manages its own block in `~/.sbuildrc` between marker comments:
-
-```perl
-# >>> optimize optimization flags >>>
-$build_environment = {
-    'DEB_CFLAGS_APPEND'   => '-O3 -march=native -pipe',
-    'DEB_CXXFLAGS_APPEND' => '-O3 -march=native -pipe',
-};
-# <<< optimize optimization flags <<<
-```
-
-Your existing `.sbuildrc` settings outside this block are preserved.
-
-### Default Flags Explained
-
-| Flag | Purpose |
+| Profile | Behavior |
 |---|---|
-| `-O3` | Maximum optimization level — enables aggressive inlining, vectorization, and loop transformations |
-| `-march=native` | Targets your specific CPU — enables AVX, SSE4.2, BMI2, and other instruction sets your CPU supports |
-| `-pipe` | Uses pipes instead of temporary files between compilation stages — speeds up builds |
+| `vendor` | Distribution flags unchanged. Useful as a control build. |
+| `native-safe` | Default. Preserves the distribution optimization level and appends native CPU targeting such as `-march=native -pipe`. |
+| `native-aggressive` | Appends `-O3` plus native CPU targeting. Higher risk and opt-in. |
+| `adaptive` | Tries `native-aggressive`, then `native-safe`, then `vendor`. |
+| `custom` | Selected automatically when `--cflags` or `--cxxflags` is used. |
 
-## ⚠️ Important Notes
+The default is intentionally `native-safe`, not universal `-O3`. This better
+matches the objective of preserving Debian/Ubuntu robustness while still
+specializing generated code for the local machine.
 
-- **Packages are NOT portable**: Binaries compiled with `-march=native` use CPU-specific instructions and may crash on different hardware
-- **First run takes longer**: Creating the sbuild chroot requires downloading a base system (typically 200-500 MB)
-- **Some packages may fail**: Not all packages compile cleanly with `-O3`. If a build fails, try with `-O2`:
-  ```bash
-  ./optimize --cflags="-O2 -march=native -pipe" <package>
-  ```
-
-## 🔍 Troubleshooting
-
-### "Source repositories (deb-src) are not enabled"
-
-The script will offer to enable them automatically. If you prefer manual setup:
-
-**DEB822 format** (Ubuntu 24.04+, Debian Trixie+):
-```bash
-sudo sed -i 's/^Types: deb$/Types: deb deb-src/' /etc/apt/sources.list.d/*.sources
-sudo apt update
-```
-
-**Legacy format** (older systems):
-```bash
-sudo sed -i '/^#\s*deb-src/s/^#\s*//' /etc/apt/sources.list
-sudo apt update
-```
-
-### "User is not in the sbuild group"
+## Usage
 
 ```bash
-sudo usermod -aG sbuild $USER
-# Then log out and log back in
+./optimize hello
+./optimize --profile native-aggressive nginx
+./optimize --profile adaptive mesa
+./optimize --profile vendor zlib
+./optimize --cflags "-O2 -march=znver4 -pipe" zlib
 ```
 
-### Build fails with specific packages
+Build products are written under `./optimize-output` by default. To install the
+generated packages, use:
 
-Try reducing the optimization level:
 ```bash
-./optimize --cflags="-O2 -march=native -pipe" <package>
+./optimize --install hello
 ```
 
-## 📄 License
+Installation is performed with `apt-get install ./package.deb`, not
+`dpkg --force-overwrite`.
 
-[MIT](LICENSE)
+## Important Options
 
+```text
+  -p, --profile NAME          vendor, native-safe, native-aggressive, adaptive
+  -c, --cflags FLAGS          custom DEB_CFLAGS_APPEND
+  -x, --cxxflags FLAGS        custom DEB_CXXFLAGS_APPEND
+  -j, --jobs N                parallel jobs
+  -o, --output-dir DIR        output directory
+      --suite CODENAME        override detected suite
+      --chroot-mode MODE      auto, unshare, or schroot
+      --no-check              explicitly disable package tests
+      --install               install generated packages
+      --keep-build            keep temporary workspace
+  -k, --kernel                experimental tailored kernel build
+  -V, -v, --version           show version
+```
+
+## How Package Builds Work
+
+1. Detect Debian/Ubuntu base, suite, and architecture.
+2. Verify required tools and source repositories.
+3. Select an `sbuild` backend (`unshare` tarball when available, otherwise
+   `schroot`).
+4. Download the official source package with `apt-get source --download-only`.
+5. Unpack a temporary copy per attempted profile.
+6. Prepend a local changelog entry such as
+   `1.2.3-1+opt2.nativesafe.20260714T120000Z`.
+7. Run `sbuild` with a temporary `SBUILD_CONFIG`.
+8. Copy artifacts and write `manifest.yaml`.
+
+The version suffix is higher than the rebuilt official version and lower than a
+future Debian/Ubuntu revision such as `1.2.3-2`, allowing normal distribution
+updates to supersede local rebuilds.
+
+## Tests
+
+Package tests are enabled by default. Use `--no-check` only when explicitly
+accepting that tradeoff:
+
+```bash
+./optimize --no-check hello
+```
+
+In `adaptive` mode, a build or test failure in an aggressive profile causes a
+deterministic fallback to the next profile.
+
+## Kernel Mode
+
+Kernel builds are intentionally marked experimental:
+
+```bash
+./optimize --kernel
+```
+
+The current kernel path uses the distribution kernel source, the running kernel
+configuration, `localmodconfig`, hardware inventory, and `KCFLAGS="-O2
+<native-target>"` when the compiler accepts a native CPU target. If native CPU
+flags cannot be validated, the kernel build continues with `KCFLAGS="-O2"` and
+still applies the configuration reduction steps. It does not yet reproduce the
+full official Debian/Ubuntu kernel packaging pipeline. The source resolver avoids
+signed kernel wrapper packages such as `linux-signed-amd64` and uses the
+buildable unsigned kernel source package instead. Review `config.diff` and keep
+the previous kernel installed.
+
+## Development Environment
+
+The repository expects these development tools:
+
+- `shellcheck`
+- `shfmt`
+- `bash-language-server`
+
+Install them on Debian/Ubuntu systems with:
+
+```bash
+make bootstrap-dev
+```
+
+Run the local quality gate with:
+
+```bash
+make check
+```
+
+Useful targets:
+
+```bash
+make lint
+make format
+make test
+make clean
+```
+
+CI runs the same `make check` gate before building the Debian package.

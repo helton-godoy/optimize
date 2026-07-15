@@ -1,43 +1,97 @@
-.TH OPTIMIZE 1 "Julho 2026" "1.0.0" "Manual do optimize"
+.TH OPTIMIZE 1 "Julho 2026" "2.0.0" "Manual do optimize"
 .SH NOME
-optimize \- Compila pacotes Debian/Ubuntu otimizados a partir do código-fonte
+optimize \- recompila pacotes Debian/Ubuntu com otimizacao para o hardware
 .SH SINOPSE
 .B optimize
+[\fB-p\fR|\fB--profile\fR \fINOME\fR]
 [\fB-c\fR|\fB--cflags\fR \fIFLAGS\fR]
 [\fB-x\fR|\fB--cxxflags\fR \fIFLAGS\fR]
 [\fB-j\fR|\fB--jobs\fR \fIN\fR]
+[\fB-o\fR|\fB--output-dir\fR \fIDIR\fR]
 .I nome-do-pacote
+.PP
+.B optimize
+\fB--kernel\fR
+[\fIOPCOES\fR]
 .PP
 .B optimize
 [\fB-h\fR|\fB--help\fR]
 .PP
 .B optimize
-[\fB-V\fR|\fB--version\fR]
-.SH DESCRIÇÃO
+[\fB-V\fR|\fB-v\fR|\fB--version\fR]
+.SH DESCRICAO
 .B optimize
-é um substituto moderno e robusto para o antigo apt-build. Ele automatiza o processo de download, compilação e otimização de pacotes Debian e Ubuntu a partir do código-fonte em um ambiente chroot limpo e isolado usando o \fBsbuild\fR.
+recompila pacotes-fonte oficiais Debian/Ubuntu usando o fluxo padrao com
+\fBsbuild\fR e \fBdebian/rules\fR. Ele preserva o empacotamento da distribuicao
+e altera apenas parametros controlados de compilacao.
 .PP
-Garante que os pacotes sejam construídos com otimizações específicas para o hardware local (como \fB-O3\fR e \fB-march=native\fR) de forma segura, sem comprometer a estabilidade do seu sistema hospedeiro.
-.SH OPÇÕES
+O perfil padrao e \fBnative-safe\fR, que preserva o nivel de otimizacao escolhido
+pela distribuicao e acrescenta flags de CPU nativa quando suportadas. Otimizacao
+mais agressiva fica disponivel por perfis explicitos.
+.SH PERFIS
+.TP
+\fBvendor\fR
+Usa as flags da distribuicao sem alteracoes.
+.TP
+\fBnative-safe\fR
+Preserva o nivel de otimizacao da distribuicao e acrescenta alvo de CPU nativa.
+Este e o padrao.
+.TP
+\fBnative-aggressive\fR
+Acrescenta \fB-O3\fR e alvo de CPU nativa.
+.TP
+\fBadaptive\fR
+Tenta \fBnative-aggressive\fR, depois \fBnative-safe\fR e depois \fBvendor\fR.
+.SH OPCOES
+.TP
+\fB-p\fR, \fB--profile\fR \fINOME\fR
+Seleciona o perfil de compilacao.
 .TP
 \fB-c\fR, \fB--cflags\fR \fIFLAGS\fR
-Define flags personalizadas para o compilador C. Padrão: \fI-O3 -march=native -pipe\fR.
+Define \fBDEB_CFLAGS_APPEND\fR personalizado. Isto seleciona o perfil
+\fBcustom\fR.
 .TP
 \fB-x\fR, \fB--cxxflags\fR \fIFLAGS\fR
-Define flags personalizadas para o compilador C++. Padrão: \fI-O3 -march=native -pipe\fR.
+Define \fBDEB_CXXFLAGS_APPEND\fR personalizado.
 .TP
 \fB-j\fR, \fB--jobs\fR \fIN\fR
-Especifica o número de trabalhos (jobs) paralelos de compilação. O padrão é detecção automática via \fBnproc\fR.
+Define o numero de trabalhos paralelos de compilacao.
 .TP
-\fB-h\fR, \fB--help\fR
-Exibe a mensagem de ajuda e sai.
+\fB-o\fR, \fB--output-dir\fR \fIDIR\fR
+Define o diretorio de saida. O padrao e \fB./optimize-output\fR.
 .TP
-\fB-V\fR, \fB--version\fR
-Exibe as informações da versão e sai.
+\fB--suite\fR \fICODINOME\fR
+Substitui a suite detectada.
+.TP
+\fB--chroot-mode\fR \fIMODO\fR
+Seleciona \fBauto\fR, \fBunshare\fR ou \fBschroot\fR.
+.TP
+\fB--no-check\fR
+Desabilita explicitamente os testes do pacote.
+.TP
+\fB--install\fR
+Instala os pacotes gerados usando \fBapt-get install\fR.
+.TP
+\fB-k\fR, \fB--kernel\fR
+Executa o caminho experimental de kernel ajustado para o hardware. Se flags
+nativas de CPU nao estiverem disponiveis no compilador, este modo continua com
+\fB-O2\fR e ainda aplica os ajustes de configuracao do hardware. Pacotes-fonte
+assinados de empacotamento do kernel sao normalizados para o pacote-fonte nao
+assinado compilavel.
+.TP
+\fB-V\fR, \fB-v\fR, \fB--version\fR
+Exibe informacoes de versao e sai.
+.SH ARQUIVOS
+.TP
+\fBmanifest.yaml\fR
+Gerado no diretorio de saida com fonte, perfil, flags, testes, artefatos e
+checksums.
 .SH AMBIENTE
 .B optimize
-configura automaticamente o ambiente de construção injetando variáveis no arquivo \fB~/.sbuildrc\fR. Ele depende das variáveis padrão de compilação do Debian, como \fBDEB_CFLAGS_APPEND\fR.
-.SH VEJA TAMBÉM
+usa um arquivo \fBSBUILD_CONFIG\fR temporario para cada tentativa de compilacao.
+Ele nao modifica \fB~/.sbuildrc\fR.
+.SH VEJA TAMBEM
 .BR apt-get (8),
+.BR dpkg-buildflags (1),
 .BR sbuild (1),
 .BR schroot (1)

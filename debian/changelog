@@ -1,4 +1,23 @@
-optimize (1.0.11-1) UNRELEASED; urgency=medium
+optimize (2.0.0-1) unstable; urgency=medium
+
+  * Replace the package build pipeline with profile-based rebuilds:
+    vendor, native-safe, native-aggressive, adaptive and custom.
+  * Preserve Debian/Ubuntu packaging flow by building through sbuild
+    with temporary SBUILD_CONFIG files and package-local changelog
+    version suffixes.
+  * Enable package tests by default and make nocheck an explicit option.
+  * Remove persistent ~/.sbuildrc edits, chmod 777 workspaces, forced
+    dpkg overwrites and unsafe sudo cleanup paths.
+  * Add development bootstrap, shell quality checks, CLI tests and
+    version consistency tests for CI/CD.
+  * Let kernel builds continue with O2 and localmodconfig when native
+    CPU compiler flags cannot be validated.
+  * Resolve kernel builds to unsigned buildable kernel source packages
+    instead of signed wrapper sources such as linux-signed-amd64.
+
+ -- helton <chileno.brasil@gmail.com>  Tue, 14 Jul 2026 14:45:00 -0300
+
+optimize (1.0.11-1) unstable; urgency=medium
 
   * Fix source package resolving to signed kernel breaking build-deps
 
@@ -36,7 +55,7 @@ optimize (1.0.7-1) unstable; urgency=medium
 
  -- helton <chileno.brasil@gmail.com>  Mon, 13 Jul 2026 12:00:00 -0300
 
-optimize (1.0.6-1) UNRELEASED; urgency=medium
+optimize (1.0.6-1) unstable; urgency=medium
 
   * Update installation method to use dpkg --force-overwrite and
     automatically fix broken dependencies.

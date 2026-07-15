@@ -1,43 +1,95 @@
-.TH OPTIMIZE 1 "July 2026" "1.0.0" "optimize manual"
+.TH OPTIMIZE 1 "July 2026" "2.0.0" "optimize manual"
 .SH NAME
-optimize \- Build optimized Debian/Ubuntu packages from source
+optimize \- rebuild Debian/Ubuntu packages with hardware-aware optimization
 .SH SYNOPSIS
 .B optimize
+[\fB-p\fR|\fB--profile\fR \fINAME\fR]
 [\fB-c\fR|\fB--cflags\fR \fIFLAGS\fR]
 [\fB-x\fR|\fB--cxxflags\fR \fIFLAGS\fR]
 [\fB-j\fR|\fB--jobs\fR \fIN\fR]
+[\fB-o\fR|\fB--output-dir\fR \fIDIR\fR]
 .I package-name
+.PP
+.B optimize
+\fB--kernel\fR
+[\fIOPTIONS\fR]
 .PP
 .B optimize
 [\fB-h\fR|\fB--help\fR]
 .PP
 .B optimize
-[\fB-V\fR|\fB--version\fR]
+[\fB-V\fR|\fB-v\fR|\fB--version\fR]
 .SH DESCRIPTION
 .B optimize
-is a modern, robust replacement for apt-build. It automates the process of downloading, compiling, and optimizing Debian and Ubuntu packages from source in a clean, isolated chroot environment using \fBsbuild\fR.
+rebuilds official Debian/Ubuntu source packages using the standard
+\fBsbuild\fR and \fBdebian/rules\fR flow. It preserves the distribution
+packaging process and changes only controlled build parameters.
 .PP
-It ensures packages are built with hardware-specific optimizations (such as \fB-O3\fR and \fB-march=native\fR) safely, without risking the stability of your host system.
+The default profile is \fBnative-safe\fR, which preserves the optimization
+level chosen by the distribution and appends native CPU targeting flags when
+supported. More aggressive optimization is available through explicit profiles.
+.SH PROFILES
+.TP
+\fBvendor\fR
+Use distribution flags unchanged.
+.TP
+\fBnative-safe\fR
+Preserve the distribution optimization level and append native CPU targeting.
+This is the default.
+.TP
+\fBnative-aggressive\fR
+Append \fB-O3\fR plus native CPU targeting.
+.TP
+\fBadaptive\fR
+Try \fBnative-aggressive\fR, then \fBnative-safe\fR, then \fBvendor\fR.
 .SH OPTIONS
 .TP
+\fB-p\fR, \fB--profile\fR \fINAME\fR
+Select the build profile.
+.TP
 \fB-c\fR, \fB--cflags\fR \fIFLAGS\fR
-Set custom C compiler flags. Default: \fI-O3 -march=native -pipe\fR.
+Set custom \fBDEB_CFLAGS_APPEND\fR. This selects the \fBcustom\fR profile.
 .TP
 \fB-x\fR, \fB--cxxflags\fR \fIFLAGS\fR
-Set custom C++ compiler flags. Default: \fI-O3 -march=native -pipe\fR.
+Set custom \fBDEB_CXXFLAGS_APPEND\fR.
 .TP
 \fB-j\fR, \fB--jobs\fR \fIN\fR
-Specify the number of parallel build jobs. Defaults to automatic detection via \fBnproc\fR.
+Specify the number of parallel build jobs.
 .TP
-\fB-h\fR, \fB--help\fR
-Show the help message and exit.
+\fB-o\fR, \fB--output-dir\fR \fIDIR\fR
+Set the output directory. Defaults to \fB./optimize-output\fR.
 .TP
-\fB-V\fR, \fB--version\fR
+\fB--suite\fR \fICODENAME\fR
+Override the detected distribution suite.
+.TP
+\fB--chroot-mode\fR \fIMODE\fR
+Select \fBauto\fR, \fBunshare\fR, or \fBschroot\fR.
+.TP
+\fB--no-check\fR
+Disable package tests explicitly.
+.TP
+\fB--install\fR
+Install generated packages using \fBapt-get install\fR.
+.TP
+\fB-k\fR, \fB--kernel\fR
+Run the experimental tailored kernel build path. If native CPU compiler flags
+are unavailable, this mode continues with \fB-O2\fR and still applies the
+hardware-aware configuration steps. Signed kernel wrapper source packages are
+normalized to the buildable unsigned kernel source package.
+.TP
+\fB-V\fR, \fB-v\fR, \fB--version\fR
 Show version information and exit.
+.SH FILES
+.TP
+\fBmanifest.yaml\fR
+Written in the output record directory with source, profile, flags, tests,
+artifacts, and checksums.
 .SH ENVIRONMENT
 .B optimize
-automatically configures the build environment by injecting variables into the \fB~/.sbuildrc\fR file. It relies on standard Debian build variables like \fBDEB_CFLAGS_APPEND\fR.
+uses a temporary \fBSBUILD_CONFIG\fR file for each build attempt. It does not
+modify \fB~/.sbuildrc\fR.
 .SH SEE ALSO
 .BR apt-get (8),
+.BR dpkg-buildflags (1),
 .BR sbuild (1),
 .BR schroot (1)
